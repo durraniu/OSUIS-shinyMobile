@@ -987,3 +987,135 @@ ui <- f7_page(
 
 server <- function(input, output, session) {}
 shinyApp(ui, server)
+
+
+
+
+
+
+#-------------------------------------------------------
+# Folder shinyMobile5: Chapter 24----
+#-------------------------------------------------------
+
+# Run the current app in Chrome and check the:
+# * Application tab
+# * Google lighthouse audit report
+devtools::load_all()
+library(shiny)
+
+ui <- f7_page(
+  "Test",
+  navbar = f7_navbar("Title"),
+  toolbar = f7_toolbar(),
+  title = "shinyMobile",
+  options = list(filled = TRUE, color = "#FF0000", dark = FALSE)
+)
+
+server <- function(input, output, session) {}
+shinyApp(ui, server, options = list(port = 4449))
+
+## NOTE: Lighthouse does not show PWA option
+
+
+
+
+
+# Create inst/examples/pwa-app and add app.R
+# Now run:
+devtools::load_all()
+charpente::set_pwa("inst/examples/pwa-app", register_service_worker = TRUE)
+# ✔ Web manifest successfully created!
+#   ℹ Trying with https://data.jsdelivr.com/v1/package/npm/pwacompat
+# ✔ Success!
+#   ───────────────────────────────────────────────────────────────────────
+# ✔ Directory inst/pwacompat-2.0.17/js successfully created
+# ✔ File R/pwa-dependencies.R successfully created
+# • Don't forget to update the dependencies in add_dependencies!
+# ✔ pwa-utils successfully copied to /www!
+# ✔ File created at D:/shinyMobile/shinyMobile5/srcjs/sw-register.js
+# ✔ File automatically linked in `golem_add_external_resources()`.
+# ✔ Script successfuly added to JS entry point!
+# ✔ Script successfuly added to JS entry point!
+
+## NOTE: See the www folder in inst/examples/pwa-app
+
+
+
+# Shortcuts in inst/examples/pwa-app/www/manifest.webmanifest
+devtools::load_all()
+shiny::runApp("inst/examples/pwa-app", port = 5995)
+## Change the URL to: http://127.0.0.1:5995/?foo=1
+
+
+
+# Update R/pwacompat-dependencies.R
+## It was already created with charpente::set_pwa, but doing
+## local = FALSE uses CDN
+charpente::create_dependency("pwacompat", options = charpente::charpente_options(local = FALSE))
+
+# Update f7_page:
+# add_dependencies(
+#   body_tag,
+#   deps = c("framework7", "shinyMobile", "pwa", "pwacompat")
+# )
+devtools::load_all()
+shiny::runApp("inst/examples/pwa-app", port = 5995)
+## NOTE: the favicon is changed and check the deps showing up in head in inspector tools
+
+
+# Service worker
+# Follow the instructions in the chapter and in srcjs/init.js, add and build:
+# config.serviceWorker = {
+#   path: window.location.pathname + 'service-worker.js',
+#   scope: window.location.pathname
+# };
+charpente::build_js()
+devtools::load_all()
+shiny::runApp("inst/examples/pwa-app", port = 5995)
+## NOTE: See the service worker section in Application in Chrome
+## Try making it offline
+
+
+
+
+# Disable PWA for the end user
+## Add this to f7_page
+body_tag <- tags$body(
+  `data-pwa` = tolower(allowPWA),
+  tags$div(
+    id = "app",
+    # ... unchanged
+  )
+)
+## And add to srcjs/init.js
+# // check if the app is intended to be a PWA
+# let isPWA = $('body').attr('data-pwa') === 'true';
+#
+# if (isPWA) {
+#   config.serviceWorker = {
+#     path: window.location.pathname + 'service-worker.js',
+#     scope: window.location.pathname
+#   };
+# }
+charpente::build_js()
+devtools::load_all()
+shiny::runApp("inst/examples/pwa-app", port = 5995)
+
+
+
+
+
+library(shiny)
+library(OSUICode)
+
+ui <- f7_page(
+  navbar = f7_navbar("PWA App"),
+  toolbar = f7_toolbar(),
+  title = "shinyMobile"
+)
+
+server <- function(input, output, session) {
+  session$allowReconnect("force")
+}
+
+shinyApp(ui, server)

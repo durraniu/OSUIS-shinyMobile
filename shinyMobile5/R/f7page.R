@@ -23,7 +23,8 @@ shinyMobile_options <- list(
 #'
 #' @export
 f7_page <- function(..., navbar, toolbar, title = NULL,
-                    options = shinyMobile_options # NEW 2
+                    options = shinyMobile_options, # NEW 2
+                    allowPWA = TRUE
 ) {
 
   # NEW 1 create config
@@ -41,6 +42,7 @@ f7_page <- function(..., navbar, toolbar, title = NULL,
   body_tag <-
     # Body content (unchanged)
     shiny::tags$body(
+      `data-pwa` = tolower(allowPWA),
       shiny::tags$div(
         id = "app",
         shiny::tags$div(
@@ -78,7 +80,7 @@ f7_page <- function(..., navbar, toolbar, title = NULL,
     add_dependencies(
       # NEW 1
       body_tag,
-      deps = c("framework7", "shinyMobile")
+      deps = c("framework7", "shinyMobile", "pwa", "pwacompat")
     )
   )
 }

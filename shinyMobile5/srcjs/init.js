@@ -98,6 +98,20 @@ $( document ).ready(function() {
     app.methods.toggleDarkTheme();
   }
 
+  // NEW 4
+  // check if the app is intended to be a PWA
+  let isPWA = $('body').attr('data-pwa') === 'true';
+
+  if (isPWA) {
+    config.serviceWorker = {
+      path: window.location.pathname + 'service-worker.js',
+      scope: window.location.pathname
+    };
+  }
+
+
+
+
 
   let notification = app.notification.create({
     text: 'Welcome to shinyMobile!',
@@ -109,3 +123,5 @@ $( document ).ready(function() {
   }).open();
 
 });
+
+
